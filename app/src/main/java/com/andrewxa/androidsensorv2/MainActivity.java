@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     GraphView graph;
     private double graph2LastXValue = 5d;
     private Double[] dataPoints;
+    LineGraphSeries<DataPoint> series;
 
     private Thread thread;
     private boolean plotData = true;
@@ -49,6 +50,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
         graph = (GraphView) findViewById(R.id.graph);
+
+        series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+                new DataPoint(0, 0),
+        });
+        graph.addSeries(series);
+
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(20);
+
         feedMultiple();
     }
 
@@ -58,14 +69,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Movement
         float x = values[0];
         float y = values[1];
-        float z = values[2];
 
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
-                new DataPoint(x, y),
-                new DataPoint(x, y),
-                new DataPoint(x, y)
-        });
+        graph2LastXValue += 1d;
+        series.appendData(new DataPoint(graph2LastXValue, y), true, 20);
+
         graph.addSeries(series);
+
+
+
+        /*LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+                new DataPoint(x, y),
+        });
+        graph.addSeries(series);*/
+
         /*float accelationSquareRoot = (x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
         double acceleration = Math.sqrt(accelationSquareRoot);
